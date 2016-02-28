@@ -1,0 +1,241 @@
+#include<iostream>
+#include<conio.h>
+#include<algorithm>
+#include<Windows.h>
+#include<string>
+#include<list>
+
+using namespace std;
+
+//in tabe baraye harekat ruye mokhtasate saf-heye console ast
+//ke baraye chape nemoodar az an estefade kardam
+void gotoxy(int x, int y)
+{
+	static HANDLE h = NULL;  
+	if(!h)
+		h = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD c = { x, y };  
+	SetConsoleCursorPosition(h,c);
+}
+
+
+
+int main()
+{
+	double q1value,q2value,q3value;
+
+	list<string> stringnumbers;
+
+	string input;
+	cout<<"adad-ha ra ba virgul vared konid. mesal: 1,2,3\n";
+	cin>>input;
+	//joda kardane adad-ha az input va riktan dar liststringnumbers
+	int index = 0;
+	string temp = "";
+	while(input[index]!='\0')
+	{
+		if(input[index] == ',')
+		{
+			stringnumbers.push_back(temp);
+			temp = "";
+			index++;
+		}
+		else
+		{
+			temp += input[index++];
+		}
+	}
+	stringnumbers.push_back(temp);
+	temp = "";
+	//////////////////////////////////////////////////////////
+	//tabdile adadhaye list be double va rikhtan dar listnumbers
+	int size = stringnumbers.size();
+	double *numbers = new double[size];
+
+	for (int i = 0; i < size  ; i++)
+	{
+		temp = stringnumbers.back();
+		stringnumbers.pop_back();
+		numbers[i] = stod(temp,NULL);
+	}
+	/////
+
+
+
+	int q1index = size/4 , q2index = size/2 , q3index = (3*size)/4;
+	//moratab kardane araye
+	sort(numbers,numbers+size);
+
+	double min,max;
+	min = numbers[0];
+	max = numbers[size-1];
+
+
+	if(size%2 == 1)
+	{
+		q2index = size/2;
+		q2value = numbers[q2index];
+
+		if(q2index % 2 == 1)
+		{
+			q1index = q2index/2;
+			q3index = (3*size)/4;
+			q1value = numbers[q1index];
+			q3value = numbers[q3index];
+		}
+		else
+		{
+			q1value = (numbers[q2index/2]+numbers[q2index/2-1])/(double)2;
+			q3value = (numbers[(3*size)/4]+numbers[(3*size)/4+1])/(double)2;
+		}
+	}
+	else
+	{
+		q2index = size/2;
+
+		q2value = (numbers[q2index] + numbers[q2index-1])/(double)2;
+
+		if(q2index % 2 == 0)
+		{
+			q1value = (numbers[size/4] + numbers[size/4-1])/(double)2;
+			q3value = (numbers[(3*size)/4] + numbers[(3*size)/4-1])/(double)2;
+		}
+		else
+		{
+			q1index = q2index/2;
+			q1value = numbers[q1index];
+			q3index = (3*size)/4;
+			q3value = numbers[q3index];
+		}
+	}
+
+	double first_outlier , last_outlier;
+
+	first_outlier = q1value - 1.5*(q3value - q1value);
+	last_outlier = q3value + 1.5*(q3value - q1value);
+	int first_outlier_index = -1 , last_outlier_index = size;
+	int outliercount = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if(numbers[i] < first_outlier)
+		{
+			first_outlier_index++;
+			outliercount++;
+		}
+		else
+			break;
+	}
+	for (int i = size-1; i >0 ; i--)
+	{
+		if(numbers[i] > last_outlier)
+		{
+			last_outlier_index--;
+			outliercount++;
+		}
+		else
+			break;
+	}
+	cout<<"MIN = "<<min<<endl<<"Q1:"<<q1value<<" --- Q2:"<<q2value<<" --- Q3:"<<q3value<<endl;
+	cout<<"IQR : "<<q3value-q1value<<endl<<"MAX : "<<max<<endl;
+	cout<<"Outliers : ";
+	if(outliercount == 0)
+		cout<<"there isn't any outlier!\n";
+
+	if(first_outlier_index != -1)
+		for (int i = 0; i <= first_outlier; i++)
+		{
+			cout<<numbers[i]<<" , ";
+		}
+
+		if(last_outlier_index != size)
+			for (int i = last_outlier_index; i <size ; i++)
+			{
+				cout<<numbers[i]<<" , ";
+			}
+	//dar in gesmat moteghayer-haii ke baraye rasme nemoodar lazem ast ra tagsim bar max(ke bozorgtarin megdar beyne an-hast
+	//mikonam ta betavanam nemoodar ra be surate nesbi rasm konam
+	double a = min/(double)max , b = q1value/(double)max , c = q2value/(double)max , d = q3value/(double)max , e=1;
+	//har kodam az motghayer-ha ra zarbdar 100 mikonam ta an-ha ra dar negyase 100 bebaram baraye rasm
+	a*=100; b*=100; c*=100; d*=100; e*=100;
+	int aa = (int)a , bb = (int)b , cc = (int)c , dd = (int)d , ee =(int)e;
+	//dar inja chek mikonam ke agar 2 moteghayer ruye ham oftade bashad an a 1 vahed jelo mibaram
+	//ta rasme nemoodar momken bashad
+	if(aa==bb) bb++;
+	if(bb==cc)cc++;
+	else if(bb>cc) cc=bb-cc+1;
+	if(cc==dd) dd++;
+	else if(cc>dd) dd=cc-dd+1;
+	if(dd==ee) ee++;
+	else if(dd>ee) ee=dd-ee+1;
+
+	//rasme nemudar
+	//agar min va max ruye ham nayoftade bashand nemoodar ra rasm mikonam
+	if(min!=max)
+	{
+		gotoxy(0,11);
+		for (int i = 0; i < 101; i++)
+		{
+			cout<<"_";
+		}
+
+		gotoxy(aa,12);
+		cout<<"min:"<<numbers[0];
+		gotoxy(ee,12);
+		cout<<"max:"<<numbers[size-1];
+		gotoxy(bb,13);
+		cout<<"Q1:"<<q1value;
+		gotoxy(cc,14);
+		cout<<"Q2:"<<q2value;
+		gotoxy(dd,15);
+		cout<<"Q3:"<<q3value;
+
+		gotoxy(aa,9);
+		cout<<"@";
+		gotoxy(ee,9);
+		cout<<"@";
+		gotoxy(aa+1,9);
+		for (int i = aa+1; i < bb; i++)
+		{
+			cout<<"-";
+		}
+		gotoxy(dd+1,9);
+		for (int i = dd+1; i < ee; i++)
+		{
+			cout<<"-";
+		}
+
+		for (int i = -1; i < 2; i++)
+		{
+			gotoxy(bb,9+i);
+			cout<<"#";
+		}
+		for (int i = -1; i < 2; i++)
+		{
+			gotoxy(cc,9+i);
+			cout<<"|";
+		}
+		for (int i = -1; i < 2; i++)
+		{
+			gotoxy(dd,9+i);
+			cout<<"#";
+		}
+		gotoxy(bb,8);
+		for (int i = bb; i < dd; i++)
+		{
+			cout<<"#";
+		}
+		gotoxy(bb,10);
+		for (int i = bb; i < dd; i++)
+		{
+			cout<<"#";
+		}
+
+	}
+	else
+	{
+		cout<<"\nhaven't boxplot!";
+	}
+
+	getch();
+	return 0;
+}
