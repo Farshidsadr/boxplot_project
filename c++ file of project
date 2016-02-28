@@ -70,8 +70,10 @@ int main()
 	min = numbers[0];
 	max = numbers[size-1];
 
+	if(size==1)
+		min=max=q1value=q2value=q3value=numbers[0];
 
-	if(size%2 == 1)
+	else if(size%2 == 1)
 	{
 		q2index = size/2;
 		q2value = numbers[q2index];
@@ -173,21 +175,33 @@ int main()
 	if(min!=max)
 	{
 		gotoxy(0,11);
-		for (int i = 0; i < 101; i++)
+		for (int i = 0; i < 102; i++)
 		{
 			cout<<"_";
 		}
 
 		gotoxy(aa,12);
-		cout<<"min:"<<numbers[0];
+		cout<<"|";
+		gotoxy(bb,12);
+		cout<<"|";
+		gotoxy(cc,12);
+		cout<<"|";
+		gotoxy(dd,12);
+		cout<<"|";
 		gotoxy(ee,12);
-		cout<<"max:"<<numbers[size-1];
-		gotoxy(bb,13);
-		cout<<"Q1:"<<q1value;
-		gotoxy(cc,14);
-		cout<<"Q2:"<<q2value;
-		gotoxy(dd,15);
-		cout<<"Q3:"<<q3value;
+		cout<<"|";
+
+
+		gotoxy(aa,13);
+		cout<<numbers[0];
+		gotoxy(ee,13);
+		cout<<numbers[size-1];
+		gotoxy(bb,14);
+		cout<<q1value;
+		gotoxy(cc,15);
+		cout<<q2value;
+		gotoxy(dd,16);
+		cout<<q3value;
 
 		gotoxy(aa,9);
 		cout<<"@";
