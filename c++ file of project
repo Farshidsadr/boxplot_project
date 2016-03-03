@@ -144,7 +144,7 @@ int main()
 		cout<<"there isn't any outlier!\n";
 
 	if(first_outlier_index != -1)
-		for (int i = 0; i <= first_outlier; i++)
+		for (int i = 0; i <= first_outlier_index; i++)
 		{
 			cout<<numbers[i]<<" , ";
 		}
